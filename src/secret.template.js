@@ -1,6 +1,9 @@
 /*
 *   This file contains all the information to connect to an MongoDB Server
 *   if you want to use the aplication, just add put your credentials here
+*   
+*   ==============================IMPORTANT==============================
+*             Rename this file to secret.js to work properly
 */
 
 export default {
