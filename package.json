@@ -1,6 +1,7 @@
 {
   "author": "otaviocap",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js"
   },
