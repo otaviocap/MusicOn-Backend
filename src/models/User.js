@@ -7,6 +7,7 @@ const UserSchema = new Mongoose.Schema({
     },
     email: {
         type:String,
+        unique: true,
         required: true
     },
     password: {
@@ -14,7 +15,8 @@ const UserSchema = new Mongoose.Schema({
         required:true
     },
     playlists: [{
-            playlistUrl: String,
+            type: Mongoose.Schema.Types.ObjectId,
+            ref: 'Playlist'
         }
     ],
 })

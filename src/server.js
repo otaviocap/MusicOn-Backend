@@ -6,9 +6,10 @@ import secret from './secret.js';
 const app = express();
 const mongooseOptions = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true,
 };
-const dbUrl = `mongodb+srv://${secret.username}:${secret.password}@musicon-1czpl.gcp.mongodb.net/Game?retryWrites=true&w=majority`;
+const dbUrl = `mongodb+srv://${secret.username}:${secret.password}@musicon-1czpl.gcp.mongodb.net/game?retryWrites=true&w=majority`;
 
 mongoose.connect(dbUrl, mongooseOptions);
 
