@@ -1,7 +1,7 @@
 import Mongoose from 'mongoose';
 
 const PlaylistSchema = new Mongoose.Schema({
-    spotifyUrl: {
+    playlistId: {
         type:String,
         required: true
     },
