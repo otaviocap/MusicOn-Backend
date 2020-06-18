@@ -9,5 +9,7 @@
 export default {
     username: "Your MongoDB Username with read and write permissions",
     password: "Your MongoDB Password",
-    key: "A key to verify identity in all important requests and db operations"
+    key: "A key to verify identity in all important requests and db operations",
+    spotifyClientPublic: "You need to register your application at the spotify developer dashboard to get this key",
+    spotifyClientSecret: "You need to register your application at the spotify developer dashboard to get this key"
 }

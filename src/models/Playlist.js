@@ -1,12 +1,21 @@
 import Mongoose from 'mongoose';
 
 const PlaylistSchema = new Mongoose.Schema({
-    playlistId: {
+    spotifyId: {
         type:String,
         required: true
     },
-    imageUrl: {
+    name: {
+        type: String,
+        required: true
+    },
+    image: {
         type:String,
+        required: true
+    },
+    owner: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     }
 })
