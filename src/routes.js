@@ -12,6 +12,7 @@ routes.get('/api/users/:email', UserController.show);
 routes.delete('/api/users/:email', UserController.destroy);
 routes.patch('/api/users/:email', UserController.update);
 routes.post('/api/users/:email/playlists/', PlaylistsController.store);
+routes.get('/api/users/:email/playlists/', PlaylistsController.index);
 routes.delete('/api/users/:email/playlists/:playlistId', PlaylistsController.destroy);
 
 
