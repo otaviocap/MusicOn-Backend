@@ -4,31 +4,45 @@ import SpotifyAuth from '../services/SpotifyAuth.js'
 import Axios from 'axios'
 
 async function index(req, res) {
-    if (req.params.email) {
-        const { email } = req.params
-        const userExists = await Users.findOne({email})
-        if (userExists) {
-            try {
-                const userPlaylists = await Playlists.find({owner: userExists._id})
-                return res.status(200).json(userPlaylists)
-            } catch (err) {
-                console.log(err)
-                return res.status(403).json(err)
+    if (req.params.input) {
+        const { input } = req.params
+        if (input.match(/\S+@\S+\.\S+/g)) {
+            const userExists = await Users.findOne({input})
+            if (userExists) {
+                try {
+                    const userPlaylists = await Playlists.find({owner: userExists._id})
+                    return res.status(200).json(userPlaylists)
+                } catch (err) {
+                    console.log(err)
+                    return res.status(403).json(err)
+                }
             }
+            return res.status(404).json({
+                message: "User not found"
+            })
         }
-        return res.status(404).json({
-            message: "User not found"
-        })
+        try {
+            const userPlaylists = await Playlists.find({owner: input})
+            return res.status(200).json(userPlaylists)
+        } catch (err) {
+            console.log(err)
+            return res.status(403).json(err)
+        }
     }
     return res.status(400).json({
-        message: "Email is required to search"
+        message: "Input is required to search"
     })
 }
 
 async function store(req, res) {
-    if (req.params.email) {
-        const { email } = req.params
-        const userExists = await Users.findOne({email})
+    if (req.params.input) {
+        const { input } = req.params
+        let userExists;
+        if (input.match(/\S+@\S+\.\S+/g)) {
+            userExists = await Users.findOne({input})
+        } else {
+            userExists = await Users.findById(input)
+        } 
         if (userExists) {
             try {
                 const spotifyUrl = req.body.spotifyUrl
@@ -61,14 +75,19 @@ async function store(req, res) {
     })
 }
 return res.status(400).json({
-    message: "Email is required to search"
+    message: "Input is required to search"
 })
 }
 
 async function destroy(req, res) {
-    if (req.params.email) {
-        const { email, playlistId } = req.params
-        const userExists = await Users.findOne({email})
+    if (req.params.input) {
+        const { input, playlistId } = req.params
+        let userExists;
+        if (input.match(/\S+@\S+\.\S+/g)) {
+            userExists = await Users.findOne({input})
+        } else {
+            userExists = await Users.findById(input)
+        }
         if (userExists) {
             const playlistExists = await Playlists.findOne({owner: userExists._id, spotifyId: playlistId})
             if (playlistExists) {
@@ -96,7 +115,7 @@ async function destroy(req, res) {
         })
     }
     return res.status(400).json({
-        message: "Email is required to search"
+        message: "Input is required to search"
     })
 }
 

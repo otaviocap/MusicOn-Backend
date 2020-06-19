@@ -15,18 +15,13 @@ async function index(req, res) {
 
 async function show(req, res) {
     if (req.params.email) {
-        if (req.body.key === secret.key) {
-            const { email } = req.params
-            const userExists = await Users.findOne({email})
-            if (userExists) {
-                return res.json(userExists)
-            }
-            return res.status(404).json({
-                message: "User not found"
-            })
+        const { email } = req.params
+        const userExists = await Users.findOne({email})
+        if (userExists) {
+            return res.json(userExists)
         }
-        return res.status(403).json({
-            message: "Please provide the correct key"
+        return res.status(404).json({
+            message: "User not found"
         })
     }
     return res.status(400).json({

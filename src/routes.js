@@ -2,6 +2,7 @@ import UserController from './controllers/UserController.js';
 import PlaylistsController from './controllers/PlaylistController.js';
 import express from "express";
 import SpotifyAuth from './services/SpotifyAuth.js';
+import Auth from './services/Auth.js';
 
 const routes = express.Router();
 
@@ -11,9 +12,14 @@ routes.get('/api/users/', UserController.index);
 routes.get('/api/users/:email', UserController.show);
 routes.delete('/api/users/:email', UserController.destroy);
 routes.patch('/api/users/:email', UserController.update);
-routes.post('/api/users/:email/playlists/', PlaylistsController.store);
-routes.get('/api/users/:email/playlists/', PlaylistsController.index);
-routes.delete('/api/users/:email/playlists/:playlistId', PlaylistsController.destroy);
+
+//Playlist api
+routes.post('/api/users/:input/playlists/', PlaylistsController.store);
+routes.get('/api/users/:input/playlists/', PlaylistsController.index);
+routes.delete('/api/users/:input/playlists/:playlistId', PlaylistsController.destroy);
+
+//Auth
+routes.post('/api/auth', Auth.login);
 
 
 export default routes;

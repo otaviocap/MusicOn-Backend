@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors'
 import routes from './routes.js';
 import secret from './secret.js';
 
@@ -18,6 +19,7 @@ mongoose.connect(dbUrl, mongooseOptions);
 // req.params =  Acessar params (edição, delete) / put
 // req.body = acessar corpo / post
 
+app.use(cors())
 app.use(express.json());
 app.use(routes);
 
