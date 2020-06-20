@@ -35,6 +35,7 @@ async function index(req, res) {
 }
 
 async function store(req, res) {
+    console.log(req.connectedUsers)
     if (req.params.input) {
         const { input } = req.params
         let userExists;
@@ -82,6 +83,7 @@ return res.status(400).json({
 async function destroy(req, res) {
     if (req.params.input) {
         const { input, playlistId } = req.params
+        console.log(input, playlistId)
         let userExists;
         if (input.match(/\S+@\S+\.\S+/g)) {
             userExists = await Users.findOne({input})
@@ -89,7 +91,9 @@ async function destroy(req, res) {
             userExists = await Users.findById(input)
         }
         if (userExists) {
+            console.log(userExists)
             const playlistExists = await Playlists.findOne({owner: userExists._id, spotifyId: playlistId})
+            console.log(playlistExists)
             if (playlistExists) {
                 try {
                     console.log(playlistExists)
