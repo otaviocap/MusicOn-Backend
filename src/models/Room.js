@@ -1,6 +1,8 @@
 import Mongoose from 'mongoose';
 
 const PlaylistSchema = new Mongoose.Schema({
+    maxPlayers: Number,
+    maxScore: Number,
     playlistId: {
         type: Mongoose.Schema.Types.ObjectId,
         ref: "Playlist"
@@ -13,7 +15,7 @@ const PlaylistSchema = new Mongoose.Schema({
             enum: ['first', 'second', 'third', 'both', 'one', 'none'],
             default: 'none'
         },
-        socketId: 
+        socketId: String 
     }]
 })
 
