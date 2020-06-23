@@ -8,8 +8,14 @@ const PlaylistSchema = new Mongoose.Schema({
         ref: "Playlist"
     },
     players: [{
-        username: String,
-        score: Number,
+        username: {
+            type: String,
+            unique: true,
+        },
+        score: {
+            type: Number,
+            default: 0
+        },
         state: {
             type: String,
             enum: ['first', 'second', 'third', 'both', 'one', 'none'],

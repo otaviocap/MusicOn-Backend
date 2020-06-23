@@ -1,9 +1,10 @@
-import UserController from './controllers/UserController.js';
 import PlaylistsController from './controllers/PlaylistController.js';
-import express from "express";
-import SpotifyAuth from './services/SpotifyAuth.js';
-import Auth from './services/Auth.js';
+import PlayerController from './controllers/PlayerController.js';
+import UserController from './controllers/UserController.js';
 import RoomController from './controllers/RoomController.js';
+import Auth from './services/Auth.js';
+import express from "express";
+import TestController from './controllers/TestController.js';
 
 const routes = express.Router();
 
@@ -28,6 +29,13 @@ routes.get("/api/rooms/", RoomController.index)
 routes.delete("/api/rooms/:roomId/", RoomController.destroy)
 routes.get("/api/rooms/:roomId/", RoomController.show)
 
+//Players api
+routes.get('/api/rooms/:roomId/players/', PlayerController.show)
+routes.post('/api/rooms/:roomId/players', PlayerController.store)
+routes.delete('/api/rooms/:roomId/players/:playerId', PlayerController.destroy)
+routes.patch('/api/rooms/:roomId/players/:playerId', PlayerController.update)
 
+//Test api
+routes.get('/api/test', TestController.test)
 
 export default routes;
