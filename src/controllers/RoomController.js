@@ -47,6 +47,7 @@ async function show(req,res) {
 
 async function store(req, res) {
     const {playlistId, maxPlayers, maxScore} = req.body
+    console.log(playlistId, maxPlayers, maxScore)
     if (playlistId && maxPlayers && maxScore) {
         try {
             const playlistExists = await Playlist.findById(playlistId)

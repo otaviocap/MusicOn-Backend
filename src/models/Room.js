@@ -10,7 +10,7 @@ const PlaylistSchema = new Mongoose.Schema({
     players: [{
         username: {
             type: String,
-            unique: true,
+            sparse: true,
         },
         score: {
             type: Number,
