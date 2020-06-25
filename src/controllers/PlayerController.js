@@ -28,11 +28,11 @@ async function store(req, res) {
     const { roomId } = req.params
     const { username, socketId } = req.body
     if (roomId) {
-        if (username && socketId) {
+        if (username) {
             try {
                 const roomExists = await Room.findById(roomId)
                 if (roomExists) {
-                    roomExists.players.push({username, socketId})
+                    roomExists.players.push({username})
                     roomExists.save()
                     return res.status(200).json(roomExists)
                 }
@@ -48,7 +48,7 @@ async function store(req, res) {
             }
         }
         return res.status(400).json({
-            message: "Username or socketId not found"
+            message: "Username not found"
         })
     }
     return res.status(400).json({

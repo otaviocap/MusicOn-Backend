@@ -11,7 +11,7 @@ const routes = express.Router();
 //User api
 routes.post('/api/users/', UserController.store);
 routes.get('/api/users/', UserController.index);
-routes.get('/api/users/:email', UserController.show);
+routes.get('/api/users/:input', UserController.show);
 routes.delete('/api/users/:email', UserController.destroy);
 routes.patch('/api/users/:email', UserController.update);
 

@@ -20,8 +20,7 @@ const PlaylistSchema = new Mongoose.Schema({
             type: String,
             enum: ['first', 'second', 'third', 'both', 'one', 'none'],
             default: 'none'
-        },
-        socketId: String 
+        }
     }]
 })
 

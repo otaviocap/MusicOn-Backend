@@ -1,6 +1,7 @@
 import Users from '../models/User.js'
 import Crypto from 'crypto'
 import secret from '../secret.js'
+import User from '../models/User.js';
 
 //index, show, store, update, destroy
 async function index(req, res) {
@@ -14,9 +15,13 @@ async function index(req, res) {
 }
 
 async function show(req, res) {
-    if (req.params.email) {
-        const { email } = req.params
-        const userExists = await Users.findOne({email})
+    if (req.params.input) {
+        let userExists;
+        if (req.params.input.match(/\S+@\S+\.\S+/g)) {
+            userExists = await Users.findOne({"email":req.params.input})
+        } else {
+            userExists = await User.findById(req.params.input)
+        }
         if (userExists) {
             return res.json(userExists)
         }
