@@ -91,16 +91,12 @@ async function destroy(req, res) {
             userExists = await Users.findById(input)
         }
         if (userExists) {
-            console.log(userExists)
             const playlistExists = await Playlists.findOne({owner: userExists._id, spotifyId: playlistId})
-            console.log(playlistExists)
             if (playlistExists) {
                 try {
-                    console.log(playlistExists)
                     await Playlists.findByIdAndDelete(playlistExists._id)
                     await userExists.playlists.pull(playlistExists);
                     await userExists.save()
-                    console.log(userExists.playlists)
                     return res.status(200).json({
                         message: "Ok",
                         "userPlaylists": userExists.playlists

@@ -25,10 +25,8 @@ async function show(req,res) {
         try {
             const roomExists = await Room.findById(roomId)
             if (roomExists) {
-                console.log(roomExists)
                 return res.status(200).json(roomExists)
             }
-            console.log("aaa")
             return res.status(404).json({
                 message:"Room not found"
             })

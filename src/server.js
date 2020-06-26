@@ -8,19 +8,26 @@ import secret from './secret.js';
 const app = express();
 const server = app.listen(3333)
 const io = socketio.listen(server, {
-    serveClient: false
+    serveClient: false,
+    pingTimeout: 5000,
+    pingInterval: 1000,
 })
 
-const roomAndUsers = {}
 
 io.on("connection", socket => {
     const { roomId, username } = socket.handshake.query
-    if (roomAndUsers[roomId]) {
-        roomAndUsers[roomId].push(socket.id)
-    } else {
-        roomAndUsers[roomId] = [socket.id]
-    }
-    console.log("Client logged: " + username)
+    socket.join(roomId)
+    socket.to(roomId).emit("addPlayer", {username})
+    console.log("Client connected: " + username + " in the roomId: " + roomId)
+    socket.on("disconnect", () => {
+        socket.leave(roomId)
+        socket.to(roomId).emit("removePlayer", {username})
+        console.log("Client disconnected: " + username + " in the roomId: " + roomId)
+    })
+    socket.on("newMessage", (command) => {
+        console.log(command)
+        io.to(command.roomId).emit("newMessage", command)
+    })
 })
 
 
@@ -40,13 +47,12 @@ mongoose.connect(dbUrl, mongooseOptions);
 
 app.use((req, res, next) => {
     req.io = io;
-    req.roomAndUsers = roomAndUsers
 
     return next()
 })
 const corsOptions = {
-    credentials: true,
-    origin: 'http://localhost:3000'
+    // credentials: true,
+    // origin: ['http://localhost:3000','http://192.168.0.11:3000']
 }
 
 app.use(cors(corsOptions))
