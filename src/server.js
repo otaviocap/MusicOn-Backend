@@ -4,6 +4,7 @@ import socketio from 'socket.io'
 import cors from 'cors'
 import routes from './routes.js';
 import secret from './secret.js';
+import helper from './services/GameHelper.js'
 
 const app = express();
 const server = app.listen(3333)
@@ -13,23 +14,7 @@ const io = socketio.listen(server, {
     pingInterval: 1000,
 })
 
-
-io.on("connection", socket => {
-    const { roomId, username } = socket.handshake.query
-    socket.join(roomId)
-    socket.to(roomId).emit("addPlayer", {username})
-    console.log("Client connected: " + username + " in the roomId: " + roomId)
-    socket.on("disconnect", () => {
-        socket.leave(roomId)
-        socket.to(roomId).emit("removePlayer", {username})
-        console.log("Client disconnected: " + username + " in the roomId: " + roomId)
-    })
-    socket.on("newMessage", (command) => {
-        console.log(command)
-        io.to(command.roomId).emit("newMessage", command)
-    })
-})
-
+helper.registerAndHandleEvents(io)
 
 const mongooseOptions = {
     useNewUrlParser: true,

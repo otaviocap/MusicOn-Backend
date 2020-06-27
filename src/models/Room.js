@@ -11,6 +11,7 @@ const PlaylistSchema = new Mongoose.Schema({
         username: {
             type: String,
             sparse: true,
+            unique: true,
         },
         score: {
             type: Number,
