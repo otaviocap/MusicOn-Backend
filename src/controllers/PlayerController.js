@@ -26,12 +26,21 @@ async function show(req, res) {
 
 async function store(req, res) {
     const { roomId } = req.params
-    const { username, socketId } = req.body
+    const { username } = req.body
     if (roomId) {
         if (username) {
             try {
                 const roomExists = await Room.findById(roomId)
                 if (roomExists) {
+                    for (const player of roomExists.players) {
+                        console.log(username, player.username)
+                        if (player.username === username) {
+                            console.log("user in the room")
+                            return res.status(409).json({
+                                message: "User already in the room"
+                            })
+                        }
+                    }
                     roomExists.players.push({username})
                     roomExists.save()
                     return res.status(200).json(roomExists)

@@ -12,7 +12,11 @@ function registerAndHandleEvents(io) {
             socket.leave(roomId)
             socket.to(roomId).emit("removePlayer", {username})
             const roomDocument = await room.findById(roomId)
-            roomDocument.players.pull({username})
+            const playerId = await roomDocument.players.find((item) => item.username === username)
+            console.log(playerId)
+            roomDocument.players.pull({_id: playerId._id})
+            roomDocument.save()
+            // console.log(roomDocument.players)
             console.log("Client disconnected: " + username + " in the roomId: " + roomId)
         })
 
