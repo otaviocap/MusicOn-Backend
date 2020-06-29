@@ -32,18 +32,21 @@ async function store(req, res) {
             try {
                 const roomExists = await Room.findById(roomId)
                 if (roomExists) {
-                    for (const player of roomExists.players) {
-                        console.log(username, player.username)
-                        if (player.username === username) {
-                            console.log("user in the room")
-                            return res.status(409).json({
-                                message: "User already in the room"
-                            })
+                    if (roomExists.players.length + 1 <= roomExists.maxPlayers) {
+                        for (const player of roomExists.players) {
+                            if (player.username === username) {
+                                return res.status(409).json({
+                                    message: "User already in the room"
+                                })
+                            }
                         }
+                        roomExists.players.push({username})
+                        roomExists.save()
+                        return res.status(200).json(roomExists)
                     }
-                    roomExists.players.push({username})
-                    roomExists.save()
-                    return res.status(200).json(roomExists)
+                    return res.status(409).json({
+                        message: "Room is full"
+                    })
                 }
                 return res.status(404).json({
                     message:"Room not found"
