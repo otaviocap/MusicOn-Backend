@@ -6,7 +6,7 @@ import Playlist from '../models/Playlist.js'
 const roomConfigs = {}
 
 function registerAndHandleEvents(io) {
-    // room.deleteMany({}, ()=>{console.log("Cleared all the rooms")})
+    room.deleteMany({}, ()=>{console.log("Cleared all the rooms")})
     io.on("connection", async socket => {
         const { roomId, username } = socket.handshake.query
         socket.join(roomId)
@@ -14,6 +14,8 @@ function registerAndHandleEvents(io) {
         console.log("Client connected: " + username + " in the roomId: " + roomId)
         if (!roomConfigs[roomId]) {
             roomConfigs[roomId] = {}
+            roomConfigs[roomId].winState = false
+            roomConfigs[roomId].players = 0
             roomConfigs[roomId].isLoaded = false
             roomConfigs[roomId].roomDocument = await room.findById(roomId)
             roomConfigs[roomId].playlistDocument = await Playlist.findById(roomConfigs[roomId].roomDocument.playlistId)
@@ -25,6 +27,7 @@ function registerAndHandleEvents(io) {
             roomConfigs[roomId].gameIsStarted = false
             roomConfigs[roomId].isLoaded = true
         }
+        roomConfigs[roomId].players++
 
         let invalid = false
         const invalidSongs = roomConfigs[roomId].spotifyPlaylist.items.filter((item) => {if (item.track.preview_url === null) return(item.track.name)})
@@ -32,17 +35,19 @@ function registerAndHandleEvents(io) {
             invalid = true
         }
 
-        const tryToStart = () => {
+        const tryToStart = async () => {
             if (!roomConfigs[roomId].gameIsStarted) {
-                if (roomConfigs[roomId].roomDocument) {
-                    if (roomConfigs[roomId].roomDocument.players.length >= 2) {
+                if (roomConfigs[roomId].players >= 2) {
+                    if (!roomConfigs[roomId].winState) {
                         if (roomConfigs[roomId].spotifyPlaylist) {
-
                             if (invalid) {
                                 socket.to(roomId).emit("newMessage", {
                                     message: "Sorry, but your playlist only have invalid song, please create another room with other playlist"
                                 })
                             } else {
+                                const roomExists = await room.findById(roomId)
+                                roomExists.players.forEach((player) => player.state = "none")
+                                roomExists.save()
                                 const songs = roomConfigs[roomId].spotifyPlaylist.items
                                 let randomSong = songs[Math.floor(Math.random() * songs.length)].track
                                 while (randomSong.preview_url === null) {
@@ -64,12 +69,19 @@ function registerAndHandleEvents(io) {
                                     spotifyLink: randomSong.external_urls.spotify,
                                     previewAudio: randomSong.preview_url 
                                 })
+                                roomConfigs[roomId].gameIsStarted = true
+                                setTimeout(() => {roomConfigs[roomId].gameIsStarted = false; tryToStart()}, 1000 * 35)
                             }
-                        }
+                        } 
+                    } else {
+                        const roomExists = await room.findById(roomId)
+                        roomExists.players.forEach((player) => {player.state = "none"; player.score = 0})
+                        roomExists.save()
+                        socket.to(roomId).emit("winState")
+                        roomConfigs[roomId].winState = false
+                        setTimeout(() => {roomConfigs[roomId].gameIsStarted = false; tryToStart()}, 1000 * 5)
                     }
                 }
-            } else {
-                setTimeout(tryToStart, 1000)
             }
         }
         tryToStart()
@@ -79,9 +91,18 @@ function registerAndHandleEvents(io) {
             socket.to(roomId).emit("removePlayer", {username})
             const roomDocument = await room.findById(roomId)
             const player = await roomDocument.players.find((item) => item.username === username)
-            console.log(player)
             roomDocument.players.pull({_id: player._id})
             roomDocument.save()
+            roomConfigs[roomId].players--
+            if (roomConfigs[roomId].players === 0) {
+                const checkForEnd = async () => {
+                    if (roomConfigs[roomId].players === 0) {
+                        await room.findByIdAndDelete(roomId)
+                        console.log("Cleared an empty room, with the id " + roomId)
+                    }
+                }
+                setTimeout(checkForEnd, 10000)
+            }
             console.log("Client disconnected: " + username + " in the roomId: " + roomId)
 
             if (roomConfigs[roomId].gameIsStarted) {
@@ -93,7 +114,6 @@ function registerAndHandleEvents(io) {
         })
 
         socket.on("newMessage", (command) => {
-            console.log(command)
             io.to(command.roomId).emit("newMessage", command)
         })
 
@@ -134,6 +154,9 @@ function registerAndHandleEvents(io) {
             player.score = newScore
             player.state = nextState
             roomDocument.save()
+            if (newScore >= roomDocument.maxScore) {
+                roomConfigs[roomId].winState = true
+            }
             console.log("Correct answer by " + username + " next state will be " + nextState)
             io.to(roomId).emit("changeState", {
                 username,
