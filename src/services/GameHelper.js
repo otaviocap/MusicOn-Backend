@@ -77,7 +77,7 @@ function registerAndHandleEvents(io) {
                         const roomExists = await room.findById(roomId)
                         roomExists.players.forEach((player) => {player.state = "none"; player.score = 0})
                         roomExists.save()
-                        socket.to(roomId).emit("winState")
+                        io.to(roomId).emit("winState")
                         roomConfigs[roomId].winState = false
                         setTimeout(() => {roomConfigs[roomId].gameIsStarted = false; tryToStart()}, 1000 * 5)
                     }

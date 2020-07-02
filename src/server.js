@@ -22,7 +22,7 @@ const mongooseOptions = {
     useCreateIndex: true,
     useFindAndModify: true
 };
-const dbUrl = `mongodb+srv://${secret.username}:${secret.password}@musicon-1czpl.gcp.mongodb.net/game?retryWrites=true&w=majority`;
+const dbUrl = `mongodb+srv://${secret.username}:${secret.password}@${secret.dbUrl}/game?retryWrites=true&w=majority`;
 
 mongoose.connect(dbUrl, mongooseOptions);
 
