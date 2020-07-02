@@ -1,8 +1,10 @@
-![MusicOn Logo](../docs/media/Logo.png)
+![MusicOn Logo](/docs/media/Logo.png)
 
 # Music On (Backend)
 
 This is the backend for the application Music On, the music guessing game
+
+If you want here is the [frontend](https://github.com/otaviocap/MusicOn-Frontend)
 
 ## Topics
 - [Music On (Backend)](#music-on-backend)
